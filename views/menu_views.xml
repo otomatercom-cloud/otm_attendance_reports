@@ -2,7 +2,8 @@
 <odoo>
     <menuitem id="menu_otm_attendance_reports_root"
               name="Attendance Reports"
-              sequence="25"/>
+              sequence="25"
+              groups="hr_attendance.group_hr_attendance_manager"/>
 
     <menuitem id="menu_otm_attendance_dashboard"
               name="Dashboard"
