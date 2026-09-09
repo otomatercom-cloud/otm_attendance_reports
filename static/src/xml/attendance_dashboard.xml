@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="otm_attendance_reports.Dashboard">
+        <div class="otm-att-dashboard">
+            <div class="otm-att-header">
+                <h2>Attendance Dashboard</h2>
+                <div class="otm-att-filters">
+                    <select t-on-change="onPeriodChange" class="form-select">
+                        <option value="daily" t-att-selected="state.period === 'daily'">Daily</option>
+                        <option value="weekly" t-att-selected="state.period === 'weekly'">Weekly</option>
+                        <option value="monthly" t-att-selected="state.period === 'monthly'">Monthly</option>
+                        <option value="custom" t-att-selected="state.period === 'custom'">Custom</option>
+                    </select>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateFrom"
+                           t-on-change="(ev) => this.onDateChange(ev, 'dateFrom')"/>
+                    <span class="otm-att-to">to</span>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateTo"
+                           t-on-change="(ev) => this.onDateChange(ev, 'dateTo')"/>
+                    <select class="form-select" t-on-change="onDepartmentChange">
+                        <option value="">All Departments</option>
+                        <t t-foreach="state.departments" t-as="dept" t-key="dept.id">
+                            <option t-att-value="dept.id">
+                                <t t-esc="dept.name"/>
+                            </option>
+                        </t>
+                    </select>
+                    <button class="btn btn-primary" t-on-click="onApply">Apply</button>
+                </div>
+            </div>
+
+            <div class="otm-att-cards">
+                <div class="otm-card otm-card-late" t-on-click="() => this.openReport('late_arrival')">
+                    <div class="otm-card-value"><t t-esc="state.data.counts.late_arrival"/></div>
+                    <div class="otm-card-label">Late Arrivals</div>
+                </div>
+                <div class="otm-card otm-card-misspunch" t-on-click="() => this.openReport('miss_punch')">
+                    <div class="otm-card-value"><t t-esc="state.data.counts.miss_punch"/></div>
+                    <div class="otm-card-label">Miss Punches</div>
+                </div>
+                <div class="otm-card otm-card-early" t-on-click="() => this.openReport('early_leaving')">
+                    <div class="otm-card-value"><t t-esc="state.data.counts.early_leaving"/></div>
+                    <div class="otm-card-label">Early Leaving</div>
+                </div>
+                <div class="otm-card otm-card-absent" t-on-click="() => this.openReport('absent')">
+                    <div class="otm-card-value"><t t-esc="state.data.counts.absent"/></div>
+                    <div class="otm-card-label">Absent</div>
+                </div>
+                <div class="otm-card otm-card-overtime" t-on-click="() => this.openReport('overtime')">
+                    <div class="otm-card-value"><t t-esc="state.data.counts.overtime"/></div>
+                    <div class="otm-card-label">Overtime Days</div>
+                </div>
+                <div class="otm-card otm-card-total">
+                    <div class="otm-card-value"><t t-esc="state.data.total_employees"/></div>
+                    <div class="otm-card-label">Total Employees</div>
+                </div>
+            </div>
+
+            <div class="otm-att-trend">
+                <h3>Late Arrivals vs Absences by Day</h3>
+                <div class="otm-att-chart">
+                    <t t-foreach="state.data.trend" t-as="point" t-key="point_index">
+                        <div class="otm-att-bar-group">
+                            <div class="otm-att-bar-pair">
+                                <div class="otm-att-bar otm-bar-late"
+                                     t-attf-style="height: {{barHeight(point.late)}}%"
+                                     t-att-title="point.late"/>
+                                <div class="otm-att-bar otm-bar-absent"
+                                     t-attf-style="height: {{barHeight(point.absent)}}%"
+                                     t-att-title="point.absent"/>
+                            </div>
+                            <div class="otm-att-bar-label"><t t-esc="point.date"/></div>
+                        </div>
+                    </t>
+                </div>
+                <div class="otm-att-legend">
+                    <span class="otm-legend-dot otm-bar-late"/> Late Arrivals
+                    <span class="otm-legend-dot otm-bar-absent"/> Absent
+                </div>
+            </div>
+
+            <div class="otm-att-loading" t-if="state.loading">Loading...</div>
+        </div>
+    </t>
+</templates>

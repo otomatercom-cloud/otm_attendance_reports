@@ -1,0 +1,169 @@
+.otm-att-dashboard {
+    padding: 24px 28px;
+    background: #f5f6fa;
+    min-height: 100%;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    .otm-att-header {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 24px;
+
+        h2 {
+            font-weight: 700;
+            color: #1e2432;
+            margin: 0;
+        }
+    }
+
+    .otm-att-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+
+        select, input {
+            min-width: 140px;
+        }
+
+        .otm-att-to {
+            color: #8a8f99;
+        }
+
+        .btn-primary {
+            background-color: #4f5fff;
+            border-color: #4f5fff;
+        }
+    }
+
+    .otm-att-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .otm-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(20, 20, 43, 0.06);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        border-left: 5px solid transparent;
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(20, 20, 43, 0.1);
+        }
+
+        .otm-card-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #1e2432;
+            line-height: 1.1;
+        }
+
+        .otm-card-label {
+            margin-top: 6px;
+            color: #8a8f99;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+    }
+
+    .otm-card-late { border-left-color: #ff9f43; }
+    .otm-card-misspunch { border-left-color: #ee5253; }
+    .otm-card-early { border-left-color: #feca57; }
+    .otm-card-absent { border-left-color: #ff6b6b; }
+    .otm-card-overtime { border-left-color: #1dd1a1; }
+    .otm-card-total {
+        border-left-color: #4f5fff;
+        cursor: default;
+        &:hover { transform: none; box-shadow: 0 2px 10px rgba(20, 20, 43, 0.06); }
+    }
+
+    .otm-att-trend {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        box-shadow: 0 2px 10px rgba(20, 20, 43, 0.06);
+
+        h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e2432;
+            margin-bottom: 18px;
+        }
+    }
+
+    .otm-att-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        height: 200px;
+        border-bottom: 1px solid #eceef2;
+        padding-bottom: 4px;
+        overflow-x: auto;
+    }
+
+    .otm-att-bar-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 34px;
+        height: 100%;
+        justify-content: flex-end;
+    }
+
+    .otm-att-bar-pair {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 100%;
+    }
+
+    .otm-att-bar {
+        width: 10px;
+        min-height: 2px;
+        border-radius: 3px 3px 0 0;
+    }
+
+    .otm-bar-late { background: #ff9f43; }
+    .otm-bar-absent { background: #ff6b6b; }
+
+    .otm-att-bar-label {
+        margin-top: 6px;
+        font-size: 10px;
+        color: #8a8f99;
+        white-space: nowrap;
+    }
+
+    .otm-att-legend {
+        margin-top: 14px;
+        font-size: 12px;
+        color: #8a8f99;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .otm-legend-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        margin-left: 14px;
+
+        &:first-child { margin-left: 0; }
+    }
+
+    .otm-att-loading {
+        margin-top: 16px;
+        color: #8a8f99;
+        font-size: 13px;
+    }
+}

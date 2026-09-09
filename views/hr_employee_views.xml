@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_otm_shift" model="ir.ui.view">
+        <field name="name">hr.employee.form.otm.shift</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Attendance Report Settings" name="otm_attendance_settings">
+                    <group>
+                        <field name="otm_shift_start" widget="float_time"/>
+                        <field name="otm_shift_end" widget="float_time"/>
+                    </group>
+                    <group>
+                        <field name="otm_grace_minutes"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

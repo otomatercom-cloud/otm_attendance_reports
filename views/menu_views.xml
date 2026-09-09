@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_otm_attendance_reports_root"
+              name="Attendance Reports"
+              sequence="25"/>
+
+    <menuitem id="menu_otm_attendance_dashboard"
+              name="Dashboard"
+              parent="menu_otm_attendance_reports_root"
+              action="action_otm_attendance_dashboard"
+              sequence="10"/>
+
+    <menuitem id="menu_otm_attendance_report_wizard"
+              name="Generate Report"
+              parent="menu_otm_attendance_reports_root"
+              action="action_otm_attendance_report_wizard"
+              sequence="20"/>
+
+    <menuitem id="menu_otm_attendance_report_settings"
+              name="Settings"
+              parent="menu_otm_attendance_reports_root"
+              action="action_otm_attendance_report_settings"
+              sequence="30"
+              groups="hr_attendance.group_hr_attendance_manager"/>
+</odoo>
