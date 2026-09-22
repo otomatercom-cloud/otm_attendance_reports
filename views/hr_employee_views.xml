@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
-                <group string="Attendance Report Settings" name="otm_attendance_settings">
+                <group string="Attendance Report Settings" name="otm_attendance_settings"
+                       groups="hr_attendance.group_hr_attendance_manager">
                     <group>
                         <field name="otm_shift_start" widget="float_time"/>
                         <field name="otm_shift_end" widget="float_time"/>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_otm_attendance_daily_report" model="ir.cron">
+        <field name="name">Attendance Reports: Generate Daily Reports</field>
+        <field name="model_id" ref="model_otm_attendance_report_saved"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_generate_daily_reports()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

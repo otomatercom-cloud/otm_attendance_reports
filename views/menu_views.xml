@@ -17,6 +17,12 @@
               action="action_otm_attendance_report_wizard"
               sequence="20"/>
 
+    <menuitem id="menu_otm_attendance_report_saved"
+              name="Saved Reports"
+              parent="menu_otm_attendance_reports_root"
+              action="action_otm_attendance_report_saved"
+              sequence="25"/>
+
     <menuitem id="menu_otm_attendance_report_settings"
               name="Settings"
               parent="menu_otm_attendance_reports_root"

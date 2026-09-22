@@ -34,8 +34,10 @@ in Settings > Attendance Reports.
         'views/hr_employee_views.xml',
         'views/res_config_settings_views.xml',
         'views/attendance_report_views.xml',
+        'views/attendance_report_saved_views.xml',
         'views/dashboard_views.xml',
         'views/menu_views.xml',
+        'data/ir_cron.xml',
     ],
     'assets': {
         'web.assets_backend': [

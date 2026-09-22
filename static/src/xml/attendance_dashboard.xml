@@ -26,6 +26,14 @@
                             </option>
                         </t>
                     </select>
+                    <select class="form-select" t-on-change="onJobChange">
+                        <option value="">All Job Types</option>
+                        <t t-foreach="state.jobs" t-as="job" t-key="job.id">
+                            <option t-att-value="job.id">
+                                <t t-esc="job.name"/>
+                            </option>
+                        </t>
+                    </select>
                     <button class="btn btn-primary" t-on-click="onApply">Apply</button>
                 </div>
             </div>

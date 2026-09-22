@@ -6,6 +6,11 @@
         <field name="arch" type="xml">
             <form string="Attendance Report">
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
                         <group>
                             <field name="report_type"/>
@@ -16,14 +21,18 @@
                         <group>
                             <field name="employee_ids" widget="many2many_tags"/>
                             <field name="department_id"/>
+                            <field name="job_id"/>
                         </group>
                     </group>
                     <button string="Generate Report" type="object" name="action_generate"
                             class="btn-primary" icon="fa-refresh"/>
+                    <button string="Save Report" type="object" name="action_save"
+                            class="btn-secondary" icon="fa-save"/>
                     <field name="line_ids" readonly="1">
                         <list>
                             <field name="employee"/>
                             <field name="department"/>
+                            <field name="job"/>
                             <field name="date"/>
                             <field name="detail"/>
                         </list>

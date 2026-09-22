@@ -20,6 +20,8 @@ class OtmAttendanceDashboard extends Component {
             dateTo: this._fmt(today),
             departmentId: false,
             departments: [],
+            jobId: false,
+            jobs: [],
             data: {
                 counts: { late_arrival: 0, miss_punch: 0, early_leaving: 0, absent: 0, overtime: 0 },
                 trend: [],
@@ -31,6 +33,9 @@ class OtmAttendanceDashboard extends Component {
         onWillStart(async () => {
             this.state.departments = await this.orm.searchRead(
                 "hr.department", [], ["id", "name"]
+            );
+            this.state.jobs = await this.orm.searchRead(
+                "hr.job", [], ["id", "name"]
             );
             await this.loadData();
         });
@@ -46,7 +51,10 @@ class OtmAttendanceDashboard extends Component {
             "otm.attendance.report.engine",
             "get_dashboard_data",
             [this.state.dateFrom, this.state.dateTo],
-            { department_id: this.state.departmentId || false }
+            {
+                department_id: this.state.departmentId || false,
+                job_id: this.state.jobId || false,
+            }
         );
         this.state.data = data;
         this.state.loading = false;
@@ -85,6 +93,11 @@ class OtmAttendanceDashboard extends Component {
         this.loadData();
     }
 
+    onJobChange(ev) {
+        this.state.jobId = ev.target.value ? parseInt(ev.target.value) : false;
+        this.loadData();
+    }
+
     onApply() {
         this.loadData();
     }
@@ -101,6 +114,7 @@ class OtmAttendanceDashboard extends Component {
                 default_date_from: this.state.dateFrom,
                 default_date_to: this.state.dateTo,
                 default_department_id: this.state.departmentId,
+                default_job_id: this.state.jobId,
                 default_period: "custom",
             },
         });
