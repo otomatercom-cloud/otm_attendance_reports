@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Standalone settings form (kept independent of hr_attendance's own
-         settings layout, so this module installs cleanly regardless of
-         how that view is structured on your server). -->
+    <!-- Proper integration into the main Settings screen (Odoo 18/19 pattern:
+         <app>/<block>/<setting> nested inside <form>, never the old
+         div.settings/app_settings_block xpath, which fails to install on 19). -->
     <record id="view_otm_attendance_report_settings_form" model="ir.ui.view">
         <field name="name">otm.attendance.report.settings.form</field>
         <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <form string="Attendance Report Settings">
-                <sheet>
-                    <group string="Default Shift Timing (used when an employee has no individual shift set)">
-                        <field name="otm_default_shift_start" widget="float_time"/>
-                        <field name="otm_default_shift_end" widget="float_time"/>
-                    </group>
-                    <group string="Late Arrival">
-                        <field name="otm_default_grace_minutes"/>
-                    </group>
-                    <group string="Overtime">
-                        <field name="otm_default_overtime_threshold"/>
-                    </group>
-                </sheet>
-                <footer>
-                    <button string="Save" type="object" name="execute" class="btn-primary"/>
-                    <button string="Discard" special="cancel" class="btn-secondary"/>
-                </footer>
-            </form>
+            <xpath expr="//form" position="inside">
+                <app id="otm_attendance_reports" string="Attendance Reports"
+                     name="otm_attendance_reports">
+                    <block title="Default Shift Timing"
+                           name="otm_attendance_shift_settings">
+                        <setting string="Default Shift Timing"
+                                 help="Used when an employee has no individual shift set">
+                            <field name="otm_default_shift_start" widget="float_time"/>
+                            <field name="otm_default_shift_end" widget="float_time"/>
+                        </setting>
+                        <setting string="Late Arrival Grace Period">
+                            <field name="otm_default_grace_minutes"/> minutes
+                        </setting>
+                        <setting string="Overtime Threshold">
+                            <field name="otm_default_overtime_threshold"/> hours/day
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
         </field>
     </record>
 
@@ -32,7 +34,7 @@
         <field name="name">Attendance Report Settings</field>
         <field name="res_model">res.config.settings</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="view_otm_attendance_report_settings_form"/>
-        <field name="target">new</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'otm_attendance_reports'}</field>
     </record>
 </odoo>
