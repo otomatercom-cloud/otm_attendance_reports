@@ -275,6 +275,84 @@ class OtmAttendanceReportEngine(models.AbstractModel):
         return result.get(report_type, [])
 
     @api.model
+    def compute_attendance_log(self, date_from, date_to,
+                                employee_ids=None, department_id=None, job_id=None):
+        """Raw attendance-punch report — one row per hr.attendance record,
+        matching the standard 'All Attendances' list (Employee / Check In /
+        Check Out / Worked Hours / Late Arrival / Late By (Hours) /
+        Left Early / Left Early By (Hours)). Computed independently from
+        hr.attendance + this module's own shift/grace settings, so it works
+        the same whether or not attendance_live_counter/logic_leave_attendance
+        is installed. One bulk query, same as _compute_all — no per-row
+        search() calls."""
+        date_from = fields_to_date(date_from)
+        date_to = fields_to_date(date_to)
+
+        domain = [('active', '=', True)]
+        if employee_ids:
+            domain.append(('id', 'in', employee_ids))
+        if department_id:
+            domain.append(('department_id', '=', department_id))
+        if job_id:
+            domain.append(('job_id', '=', job_id))
+        employees = self.env['hr.employee'].search(domain)
+        if not employees:
+            return []
+
+        buffer_start = datetime.combine(date_from - timedelta(days=1), time.min)
+        buffer_end = datetime.combine(date_to + timedelta(days=1), time.max)
+        all_attendances = self.env['hr.attendance'].sudo().search([
+            ('employee_id', 'in', employees.ids),
+            ('check_in', '>=', buffer_start),
+            ('check_in', '<=', buffer_end),
+        ], order='check_in desc')
+
+        rows = []
+        shift_cache = {}
+        for att in all_attendances:
+            employee = att.employee_id
+            if employee.id not in shift_cache:
+                start_f, end_f, grace, _ot = self._get_employee_shift(employee)
+                shift_cache[employee.id] = (
+                    float_to_time(start_f), float_to_time(end_f), grace, self._tz(employee),
+                )
+            shift_start_t, shift_end_t, grace, tz = shift_cache[employee.id]
+
+            first_in_local = pytz.utc.localize(att.check_in).astimezone(tz)
+            local_date = first_in_local.date()
+            if local_date < date_from or local_date > date_to:
+                continue
+
+            shift_start_dt = tz.localize(datetime.combine(local_date, shift_start_t))
+            late_minutes = int((first_in_local - shift_start_dt).total_seconds() / 60)
+            is_late = late_minutes > grace
+
+            check_out_str = ''
+            is_left_early = False
+            left_early_minutes = 0
+            if att.check_out:
+                last_out_local = pytz.utc.localize(att.check_out).astimezone(tz)
+                check_out_str = last_out_local.strftime('%d-%m-%Y %H:%M')
+                shift_end_dt = tz.localize(datetime.combine(local_date, shift_end_t))
+                left_early_minutes = int((shift_end_dt - last_out_local).total_seconds() / 60)
+                is_left_early = left_early_minutes > grace
+
+            rows.append({
+                'employee': employee.name,
+                'department': employee.department_id.name or '',
+                'job': employee.job_id.name or '',
+                'check_in': first_in_local.strftime('%d-%m-%Y %H:%M'),
+                'check_out': check_out_str,
+                'worked_hours': '%.2f' % (att.worked_hours or 0.0),
+                'late_arrival': 'Yes' if is_late else 'No',
+                'late_by_hours': '%.2f' % (late_minutes / 60.0) if is_late else '0.00',
+                'left_early': 'Yes' if is_left_early else 'No',
+                'left_early_by_hours': '%.2f' % (left_early_minutes / 60.0) if is_left_early else '0.00',
+            })
+
+        return rows
+
+    @api.model
     def get_dashboard_data(self, date_from, date_to, department_id=None, job_id=None):
         result, trend = self._compute_all(
             date_from, date_to, department_id=department_id, job_id=job_id, want_trend=True,

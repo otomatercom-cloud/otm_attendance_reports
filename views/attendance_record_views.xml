@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_otm_attendance_record_wizard_form" model="ir.ui.view">
+        <field name="name">otm.attendance.record.wizard.form</field>
+        <field name="model">otm.attendance.record.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Attendance Records">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="period"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="employee_ids" widget="many2many_tags"/>
+                            <field name="department_id"/>
+                            <field name="job_id"/>
+                        </group>
+                    </group>
+                    <button string="Generate Report" type="object" name="action_generate"
+                            class="btn-primary" icon="fa-refresh"/>
+                    <field name="line_ids" readonly="1">
+                        <list>
+                            <field name="employee"/>
+                            <field name="check_in"/>
+                            <field name="check_out"/>
+                            <field name="worked_hours"/>
+                            <field name="late_arrival"/>
+                            <field name="late_by_hours"/>
+                            <field name="left_early"/>
+                            <field name="left_early_by_hours"/>
+                            <field name="department"/>
+                            <field name="job"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_otm_attendance_record_wizard" model="ir.actions.act_window">
+        <field name="name">Attendance Records</field>
+        <field name="res_model">otm.attendance.record.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+</odoo>
