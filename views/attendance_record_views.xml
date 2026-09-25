@@ -25,6 +25,8 @@
                     </group>
                     <button string="Generate Report" type="object" name="action_generate"
                             class="btn-primary" icon="fa-refresh"/>
+                    <button string="Export to Excel" type="object" name="action_export_excel"
+                            class="btn-secondary" icon="fa-file-excel-o"/>
                     <field name="line_ids" readonly="1">
                         <list>
                             <field name="employee"/>

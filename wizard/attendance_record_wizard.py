@@ -1,3 +1,6 @@
+import base64
+import io
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
@@ -87,6 +90,75 @@ class OtmAttendanceRecordWizard(models.TransientModel):
             'view_mode': 'form',
             'views': [[False, 'form']],
             'target': 'current',
+        }
+
+    def action_export_excel(self):
+        """Exports the currently generated results (or generates them first
+        if the report hasn't been run yet) as a real .xlsx file, via a
+        temporary ir.attachment + direct-download URL."""
+        self.ensure_one()
+        if not self.line_ids:
+            self.action_generate()
+
+        import xlsxwriter
+
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        sheet = workbook.add_worksheet('Attendance Records')
+
+        title_format = workbook.add_format({'bold': True, 'font_size': 14})
+        header_format = workbook.add_format({
+            'bold': True, 'bg_color': '#4472C4', 'font_color': 'white',
+            'border': 1, 'align': 'center', 'valign': 'vcenter',
+        })
+        cell_format = workbook.add_format({'border': 1})
+        cell_format_center = workbook.add_format({'border': 1, 'align': 'center'})
+
+        sheet.merge_range(0, 0, 0, 9, self.name or 'Attendance Records', title_format)
+
+        headers = [
+            'Employee', 'Department', 'Job Position', 'Check In', 'Check Out',
+            'Worked Hours', 'Late Arrival', 'Late By (Hours)', 'Left Early',
+            'Left Early By (Hours)',
+        ]
+        header_row = 2
+        for col, label in enumerate(headers):
+            sheet.write(header_row, col, label, header_format)
+
+        for row_idx, line in enumerate(self.line_ids, start=header_row + 1):
+            sheet.write(row_idx, 0, line.employee or '', cell_format)
+            sheet.write(row_idx, 1, line.department or '', cell_format)
+            sheet.write(row_idx, 2, line.job or '', cell_format)
+            sheet.write(row_idx, 3, line.check_in or '', cell_format)
+            sheet.write(row_idx, 4, line.check_out or '', cell_format)
+            sheet.write(row_idx, 5, line.worked_hours or '', cell_format_center)
+            sheet.write(row_idx, 6, line.late_arrival or '', cell_format_center)
+            sheet.write(row_idx, 7, line.late_by_hours or '', cell_format_center)
+            sheet.write(row_idx, 8, line.left_early or '', cell_format_center)
+            sheet.write(row_idx, 9, line.left_early_by_hours or '', cell_format_center)
+
+        widths = [22, 18, 18, 18, 18, 13, 13, 15, 12, 17]
+        for col, width in enumerate(widths):
+            sheet.set_column(col, col, width)
+        sheet.freeze_panes(header_row + 1, 0)
+
+        workbook.close()
+        output.seek(0)
+
+        attachment = self.env['ir.attachment'].create({
+            'name': '%s.xlsx' % (self.name or 'Attendance Records'),
+            'type': 'binary',
+            'datas': base64.b64encode(output.read()),
+            'res_model': self._name,
+            'res_id': self.id,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+        output.close()
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true' % attachment.id,
+            'target': 'self',
         }
 
 
