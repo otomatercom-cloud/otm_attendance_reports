@@ -11,6 +11,16 @@ def float_to_time(value):
     return time(hour=hours % 24, minute=minutes % 60)
 
 
+def hours_to_hm(value):
+    """Format a float number of hours (e.g. 8.7) as 'H:MM' (e.g. '8:42') for
+    display in the attendance-records report. A raw decimal like '8.70'
+    reads as if it could be minutes-past-the-hour rather than a fraction of
+    an hour (0.70 hr = 42 min, not 70 min) - this avoids that confusion."""
+    total_minutes = int(round((value or 0.0) * 60))
+    hours, minutes = divmod(total_minutes, 60)
+    return '%d:%02d' % (hours, minutes)
+
+
 class OtmAttendanceReportEngine(models.AbstractModel):
     """Core computation engine for all attendance reports and the dashboard.
     Reads directly from standard hr.attendance (check_in / check_out), so it
@@ -343,11 +353,11 @@ class OtmAttendanceReportEngine(models.AbstractModel):
                 'job': employee.job_id.name or '',
                 'check_in': first_in_local.strftime('%d-%m-%Y %H:%M'),
                 'check_out': check_out_str,
-                'worked_hours': '%.2f' % (att.worked_hours or 0.0),
+                'worked_hours': hours_to_hm(att.worked_hours),
                 'late_arrival': 'Yes' if is_late else 'No',
-                'late_by_hours': '%.2f' % (late_minutes / 60.0) if is_late else '0.00',
+                'late_by_hours': hours_to_hm(late_minutes / 60.0) if is_late else '0:00',
                 'left_early': 'Yes' if is_left_early else 'No',
-                'left_early_by_hours': '%.2f' % (left_early_minutes / 60.0) if is_left_early else '0.00',
+                'left_early_by_hours': hours_to_hm(left_early_minutes / 60.0) if is_left_early else '0:00',
             })
 
         return rows
